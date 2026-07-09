@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GLOW SEOUL — K-Beauty</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f0f6fb;
+      --blush: #c8dff2;
+      --rose:  #6aaed6;
+      --deep:  #4d83b2;
+      --muted: #5a7a96;
+      --accent:#a8cce0;
+      --soft:  #ddeef8;
+      --white: #fff;
+      --ff-serif: 'Cormorant Garamond', Georgia, serif;
+      --ff-sans:  'Jost', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--deep); font-family: var(--ff-sans); font-weight: 300; overflow-x: hidden; cursor: none; }
+
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--rose); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .3s,height .3s,background .3s; }
+    .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--rose); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all .35s cubic-bezier(.25,.46,.45,.94); }
+    body:has(a:hover) .cursor { width: 16px; height: 16px; background: var(--deep); }
+    body:has(a:hover) .cursor-ring { width: 52px; height: 52px; border-color: var(--deep); }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.6rem 4rem; backdrop-filter: blur(12px); background: rgba(240,246,251,.88); border-bottom: 1px solid rgba(106,174,214,.18); transition: padding .4s; }
+    nav.scrolled { padding: 1rem 4rem; }
+    .nav-logo { font-family: var(--ff-serif); font-size: 1.6rem; font-weight: 600; letter-spacing: .18em; color: var(--deep); text-decoration: none; }
+    .nav-logo span { color: var(--rose); }
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); text-decoration: none; position: relative; transition: color .3s; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--rose); transition: width .35s; }
+    .nav-links a:hover { color: var(--deep); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--white); background: var(--deep); padding: .65rem 1.5rem; text-decoration: none; border: 1px solid var(--deep); transition: background .3s,color .3s; }
+    .nav-cta:hover { background: var(--rose); border-color: var(--rose); }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 0 4rem; gap: 4rem; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; right: -8%; top: 5%; width: 52vw; height: 90vh; background: radial-gradient(ellipse at 60% 40%, var(--blush) 0%, rgba(200,223,242,.3) 55%, transparent 80%); border-radius: 60% 40% 55% 45%/50% 60% 40% 50%; z-index: 0; animation: morphBlob 10s ease-in-out infinite alternate; }
+    @keyframes morphBlob { from{border-radius:60% 40% 55% 45%/50% 60% 40% 50%} to{border-radius:40% 60% 45% 55%/60% 40% 60% 40%} }
+    .hero-text { position: relative; z-index: 1; }
+    .hero-eyebrow { font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--rose); margin-bottom: 1.4rem; opacity: 0; animation: fadeUp .8s .3s forwards; }
+    .hero-title { font-family: var(--ff-serif); font-size: clamp(3.2rem,5.5vw,6rem); font-weight: 300; line-height: 1.06; color: var(--deep); margin-bottom: 1.8rem; opacity: 0; animation: fadeUp .9s .5s forwards; }
+    .hero-title em { font-style: italic; color: var(--rose); }
+    .hero-sub { font-size: .95rem; line-height: 1.8; color: var(--muted); max-width: 38ch; margin-bottom: 3rem; opacity: 0; animation: fadeUp .9s .7s forwards; }
+    .hero-actions { display: flex; gap: 1.2rem; align-items: center; opacity: 0; animation: fadeUp .9s .9s forwards; }
+    .btn-primary { font-family: var(--ff-sans); font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; color: var(--white); background: var(--rose); padding: 1rem 2.4rem; text-decoration: none; border: 1px solid var(--rose); transition: background .3s,border-color .3s; display: inline-block; }
+    .btn-primary:hover { background: var(--deep); border-color: var(--deep); }
+    .btn-ghost { font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: .5rem; transition: color .3s; }
+    .btn-ghost:hover { color: var(--rose); }
+    .btn-ghost svg { transition: transform .3s; }
+    .btn-ghost:hover svg { transform: translateX(4px); }
+
+    /* HERO VISUAL — model photo */
+    .hero-visual { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; opacity: 0; animation: fadeIn 1.2s 1s forwards; }
+    .hero-model-wrap { position: relative; width: min(360px,44vw); }
+    .hero-model-img { width: 100%; height: min(520px,65vw); object-fit: cover; object-position: top; border-radius: 54% 46% 42% 58%/48% 52% 48% 52%; box-shadow: 0 40px 80px rgba(106,174,214,.3); }
+    .tag-float { position: absolute; background: var(--white); border: 1px solid rgba(106,174,214,.3); padding: .6rem 1rem; font-size: .68rem; letter-spacing: .1em; color: var(--muted); white-space: nowrap; box-shadow: 0 8px 24px rgba(26,46,64,.08); animation: float 4s ease-in-out infinite; }
+    .tag-float:nth-child(1) { top: 8%; left: -14%; animation-delay: 0s; }
+    .tag-float:nth-child(2) { bottom: 18%; right: -14%; animation-delay: 1.5s; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+    .hero-badge { position: absolute; bottom: -10px; right: -10px; width: 88px; height: 88px; background: var(--deep); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; animation: spin 18s linear infinite; }
+    .hero-badge span { font-size: .48rem; letter-spacing: .18em; text-transform: uppercase; color: var(--blush); display: block; text-align: center; line-height: 1.6; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .6rem; font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); opacity: 0; animation: fadeIn 1s 1.4s forwards; }
+    .scroll-hint::after { content: ''; width: 1px; height: 40px; background: linear-gradient(var(--muted),transparent); animation: scrollLine 2s ease-in-out infinite; }
+    @keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+    /* TICKER */
+    .ticker { background: var(--deep); color: var(--blush); padding: .75rem 0; overflow: hidden; white-space: nowrap; }
+    .ticker-track { display: inline-flex; gap: 3rem; animation: ticker 25s linear infinite; }
+    .ticker-item { font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; display: flex; align-items: center; gap: 1rem; }
+    .ticker-item::before { content: '◆'; color: var(--rose); font-size: .5rem; }
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    section { padding: 8rem 4rem; }
+    .section-tag { font-size: .65rem; letter-spacing: .35em; text-transform: uppercase; color: var(--rose); margin-bottom: 1rem; display: flex; align-items: center; gap: .8rem; }
+    .section-tag::before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--rose); }
+    .section-title { font-family: var(--ff-serif); font-size: clamp(2.2rem,4vw,3.6rem); font-weight: 300; line-height: 1.1; color: var(--deep); margin-bottom: 1.2rem; }
+    .section-title em { font-style: italic; color: var(--rose); }
+    .section-lead { font-size: .9rem; line-height: 1.85; color: var(--muted); max-width: 50ch; }
+
+    /* ABOUT — model collage */
+    .about { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; background: var(--white); }
+    .about-collage { position: relative; height: 540px; }
+    .about-collage img { position: absolute; object-fit: cover; border-radius: 4px; }
+    .about-main-img { width: 72%; height: 88%; top: 0; left: 0; box-shadow: 0 20px 60px rgba(26,46,64,.12); }
+    .about-side-img { width: 46%; height: 54%; bottom: 0; right: 0; border: 5px solid var(--white); box-shadow: 0 12px 40px rgba(26,46,64,.1); }
+    .about-stat { position: absolute; top: 12%; left: -6%; background: var(--deep); color: var(--cream); padding: 1.2rem 1.6rem; z-index: 2; }
+    .about-stat .num { font-size: 2.8rem; font-weight: 300; color: var(--rose); display: block; line-height: 1; }
+    .about-stat .label { font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--blush); }
+    .about-text .section-lead { margin-bottom: 2.4rem; }
+    .features-list { list-style: none; display: flex; flex-direction: column; gap: .9rem; }
+    .features-list li { display: flex; align-items: center; gap: .85rem; font-size: .85rem; color: var(--muted); }
+    .features-list li::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--rose); border-radius: 50%; flex-shrink: 0; }
+
+    /* PRODUCTS */
+    .products { background: var(--cream); }
+    .products-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
+    .products-link { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--rose); text-decoration: none; display: flex; align-items: center; gap: .5rem; transition: gap .3s; }
+    .products-link:hover { gap: 1rem; }
+    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+
+    .product-card { background: var(--white); position: relative; overflow: hidden; cursor: none; transition: transform .4s cubic-bezier(.25,.46,.45,.94),box-shadow .4s; }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(26,46,64,.1); }
+    .product-card:nth-child(2) { transform: translateY(2rem); }
+    .product-card:nth-child(2):hover { transform: translateY(calc(2rem - 8px)); }
+
+    .product-img { width: 100%; aspect-ratio: 3/4; position: relative; overflow: hidden; background: var(--soft); display: flex; align-items: center; justify-content: center; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .6s ease; }
+    .product-card:hover .product-img img { transform: scale(1.05); }
+
+    .product-badge { position: absolute; top: 1rem; left: 1rem; background: var(--deep); color: var(--cream); font-size: .58rem; letter-spacing: .15em; text-transform: uppercase; padding: .3rem .7rem; z-index: 2; }
+    .product-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: var(--deep); padding: .9rem 1.2rem; transform: translateY(100%); transition: transform .35s ease; z-index: 2; display: flex; align-items: center; justify-content: space-between; }
+    .product-card:hover .product-overlay { transform: translateY(0); }
+    .product-add { font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--cream); display: flex; align-items: center; gap: .5rem; }
+
+    .product-info { padding: 1.4rem 1.2rem; }
+    .product-category { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--rose); margin-bottom: .4rem; }
+    .product-name { font-family: var(--ff-serif); font-size: 1.3rem; font-weight: 400; color: var(--deep); margin-bottom: .2rem; }
+    .product-desc { font-size: .78rem; color: var(--muted); line-height: 1.6; margin-bottom: .9rem; }
+    .product-footer { display: flex; justify-content: space-between; align-items: center; }
+    .product-price { font-family: var(--ff-serif); font-size: 1.2rem; color: var(--deep); }
+    .product-rating span { color: var(--rose); font-size: .7rem; }
+
+    /* MODEL GALLERY */
+    .gallery { background: var(--deep); padding: 6rem 4rem; }
+    .gallery .section-tag { color: var(--blush); }
+    .gallery .section-tag::before { background: var(--blush); }
+    .gallery .section-title { color: var(--white); }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 3rem; }
+    .gallery-item { position: relative; overflow: hidden; aspect-ratio: 3/4; cursor: none; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .6s ease; }
+    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,46,64,.7) 0%, transparent 50%); opacity: 0; transition: opacity .4s; display: flex; align-items: flex-end; padding: 1.4rem; }
+    .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+    .gallery-item-label { font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--cream); }
+
+    /* TESTIMONIALS */
+    .testimonials { background: var(--white); }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.6rem; }
+    .testimonial-card { border: 1px solid rgba(106,174,214,.2); padding: 2rem; position: relative; transition: border-color .3s; }
+    .testimonial-card:hover { border-color: var(--rose); }
+    .testimonial-card::before { content: '"'; font-family: var(--ff-serif); font-size: 5rem; line-height: 1; color: var(--rose); opacity: .25; position: absolute; top: .6rem; left: 1.4rem; }
+    .testimonial-text { font-size: .88rem; line-height: 1.85; color: var(--muted); margin-bottom: 1.4rem; }
+    .testimonial-author { display: flex; align-items: center; gap: .8rem; }
+    .testimonial-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .testimonial-name { font-size: .78rem; font-weight: 500; color: var(--deep); }
+    .testimonial-handle { font-size: .65rem; color: var(--rose); }
+
+    /* NEWSLETTER */
+    .newsletter { background: var(--blush); text-align: center; padding: 6rem 4rem; }
+    .newsletter .section-tag { justify-content: center; }
+    .newsletter .section-tag::before { display: none; }
+    .newsletter .section-title { max-width: 16ch; margin: 0 auto 1rem; }
+    .newsletter .section-lead { margin: 0 auto 2.8rem; }
+    .newsletter-form { display: flex; max-width: 420px; margin: 0 auto; border: 1px solid var(--deep); overflow: hidden; }
+    .newsletter-form input { flex: 1; background: transparent; border: none; outline: none; padding: 1rem 1.2rem; font-family: var(--ff-sans); font-size: .8rem; color: var(--deep); }
+    .newsletter-form input::placeholder { color: var(--muted); }
+    .newsletter-form button { background: var(--deep); color: var(--cream); border: none; cursor: none; padding: 0 1.6rem; font-family: var(--ff-sans); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; transition: background .3s; white-space: nowrap; }
+    .newsletter-form button:hover { background: var(--rose); }
+
+    /* FOOTER */
+    footer { background: var(--deep); color: var(--blush); padding: 5rem 4rem 2rem; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(106,174,214,.12); margin-bottom: 2rem; }
+    .footer-brand .nav-logo { color: var(--cream); font-size: 1.8rem; display: block; margin-bottom: 1rem; }
+    .footer-brand p { font-size: .82rem; line-height: 1.8; color: rgba(200,223,242,.55); max-width: 32ch; }
+    .footer-socials { display: flex; gap: .8rem; margin-top: 1.6rem; }
+    .footer-social { width: 34px; height: 34px; border: 1px solid rgba(200,223,242,.2); display: flex; align-items: center; justify-content: center; color: var(--blush); font-size: .7rem; text-decoration: none; transition: border-color .3s,color .3s; }
+    .footer-social:hover { border-color: var(--rose); color: var(--rose); }
+    .footer-col h4 { font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--rose); margin-bottom: 1.4rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .7rem; }
+    .footer-col a { font-size: .8rem; color: rgba(200,223,242,.55); text-decoration: none; transition: color .3s; }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom { display: flex; justify-content: space-between; font-size: .65rem; color: rgba(200,223,242,.35); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease,transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 4rem; }
+      .hero-visual { display: none; }
+      .about { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 3rem; }
+      .products { padding: 4rem 1.5rem; }
+      .products-grid { grid-template-columns: 1fr 1fr; }
+      .product-card:nth-child(2) { transform: none; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      section { padding: 4rem 1.5rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">GLOW SEOUL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#products">Collections</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#journal">Journal</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#products" class="nav-cta">Shop Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="hero-eyebrow">K-Beauty — New Collection 2025</p>
+    <h1 class="hero-title">Seoul-inspired<br><em>glass skin</em></h1>
+    <p class="hero-sub">K-Beauty rituals reimagined with the finest botanicals and cutting-edge Seoul skincare science — for your most luminous skin yet.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Explore Collection</a>
+      <a href="#about" class="btn-ghost">
+        Our Story
+        <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5H15M15 5L10 1M15 5L10 9" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-model-wrap">
+      <div class="tag-float">✦ K-Beauty</div>
+      <img class="hero-model-img" src="https://i.pinimg.com/736x/ec/23/56/ec2356d9f36917acc94b81b79f87723f.jpg" alt="Glow Seoul model" />
+      <div class="hero-badge"><span>Cruelty<br>Free<br>✦ Vegan</span></div>
+      <div class="tag-float">✦ Glass Skin</div>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="ticker-item">Glass Skin Formula</span>
+    <span class="ticker-item">Seoul Botanicals</span>
+    <span class="ticker-item">Cruelty Free</span>
+    <span class="ticker-item">Dermatologist Tested</span>
+    <span class="ticker-item">Paraben Free</span>
+    <span class="ticker-item">Vegan Certified</span>
+    <span class="ticker-item">K-Beauty Rituals</span>
+    <span class="ticker-item">Refillable Packaging</span>
+    <span class="ticker-item">Glass Skin Formula</span>
+    <span class="ticker-item">Seoul Botanicals</span>
+    <span class="ticker-item">Cruelty Free</span>
+    <span class="ticker-item">Dermatologist Tested</span>
+    <span class="ticker-item">Paraben Free</span>
+    <span class="ticker-item">Vegan Certified</span>
+    <span class="ticker-item">K-Beauty Rituals</span>
+    <span class="ticker-item">Refillable Packaging</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-collage reveal">
+    <img class="about-main-img" src="https://i.pinimg.com/736x/10/60/08/106008692cc77e40eabb07b39c9a7e76.jpg" alt="Image">"K-Beauty model" />
+    <img class="about-side-img" src="https://i.pinimg.com/736x/da/61/04/da6104bc08643d2a7563179df05a88d1.jpg" alt="Image">,"K-Beauty model" />
+    <div class="about-stat"><span class="num">97%</span><span class="label">Natural Origin</span></div>
+  </div>
+  <div class="about-text">
+    <p class="section-tag reveal">Our Philosophy</p>
+    <h2 class="section-title reveal">K-Beauty wisdom,<br><em>Seoul's finest</em></h2>
+    <p class="section-lead reveal">Inspired by Seoul's legendary multi-step skincare culture, every Glow Seoul product is a harmony of ancient Korean botanical knowledge and modern science — crafted with intention, transparency, and care.</p>
+    <ul class="features-list reveal reveal-delay-1">
+      <li>100% transparent ingredient sourcing</li>
+      <li>Formulated without harmful chemicals</li>
+      <li>Refillable & recyclable packaging</li>
+      <li>Partnership with ethical Korean farms</li>
+      <li>Climate-neutral certified production</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="products-header reveal">
+    <div>
+      <p class="section-tag">Bestsellers Products </p>
+      <h2 class="section-title">The <em>glass skin</em> Products</h2>
+    </div>
+    <a href="#" class="products-link">View all products →</a>
+  </div>
+  <div class="products-grid">
+
+    <!-- Card 1 - Serum -->
+    <div class="product-card reveal">
+      <div class="product-img">
+     <img src="https://i.pinimg.com/1200x/9c/b6/c0/9cb6c0bf52fbba587970b24cd3796f0a.jpg" alt="Image">
+        <div class="product-badge">Bestseller</div>
+        <div class="product-overlay">
+          <span class="product-add">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5"/></svg>
+            Add to bag
+          </span>
+          <span style="font-size:.65rem;color:rgba(240,246,251,.5)">Quick view</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="product-category">Serum</p>
+        <h3 class="product-name">Pine Cica Ampoule</h3>
+        <p class="product-desc">Calming serum with centella asiatica & pine extract for sensitive skin</p>
+        <div class="product-footer">
+          <span class="product-price">8</span>
+          <div class="product-rating"><span>★★★★★</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 - Cream (offset) -->
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-img">
+        <img src="https://i.pinimg.com/1200x/6c/29/e9/6c29e983fc1931eaf410c4bd6cfd5b23.jpg" alt="Moisturizing Pad" />
+        <div class="product-badge">New</div>
+        <div class="product-overlay">
+          <span class="product-add">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5"/></svg>
+            Add to bag
+          </span>
+          <span style="font-size:.65rem;color:rgba(240,246,251,.5)">Quick view</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="product-category">Toner Pad</p>
+        <h3 class="product-name">Birch Juice Moisture Pad</h3>
+        <p class="product-desc">Birch water infused pads for glass skin hydration & glow</p>
+        <div class="product-footer">
+          <span class="product-price">8</span>
+          <div class="product-rating"><span>★★★★★</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 - Balm -->
+    <div class="product-card reveal reveal-delay-2">
+      <div class="product-img">
+        <img src="https://i.pinimg.com/736x/82/db/29/82db299ec1211329b66b02d9beaaa977.jpg" alt="Cleansing Balm" />
+        <div class="product-overlay">
+          <span class="product-add">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5"/></svg>
+            Add to bag
+          </span>
+          <span style="font-size:.65rem;color:rgba(240,246,251,.5)">Quick view</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="product-category">Cleanser</p>
+        <h3 class="product-name">Pure Grinding Cleansing Balm</h3>
+        <p class="product-desc">Melting balm cleanser with camellia & centella for deep cleanse</p>
+        <div class="product-footer">
+          <span class="product-price">2</span>
+          <div class="product-rating"><span>★★★★☆</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 - Sleeping mask -->
+    <div class="product-card reveal">
+      <div class="product-img">
+        <img src="https://i.pinimg.com/1200x/5d/96/e3/5d96e3d50a708d88e8a45a8f7e3c041a.jpg" alt="Sleeping Mask" style="object-fit:contain;padding:1rem;" />
+        <div class="product-badge">Fan Fave</div>
+        <div class="product-overlay">
+          <span class="product-add">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5"/></svg>
+            Add to bag
+          </span>
+          <span style="font-size:.65rem;color:rgba(240,246,251,.5)">Quick view</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="product-category">Sunscreen</p>
+        <h3 class="product-name">Birch Juice UV Lock SPF45</h3>
+        <p class="product-desc">Lightweight moisturising sunscreen with birch water & niacinamide</p>
+        <div class="product-footer">
+          <span class="product-price">5</span>
+          <div class="product-rating"><span>★★★★★</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 - Cleanser -->
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-img">
+        <img src="https://i.pinimg.com/1200x/dd/e4/0b/dde40bf0298b05150664b86a2d4dcd7c.jpg" alt="Dokdo Cleanser" style="object-fit:contain;padding:1rem;" />
+        <div class="product-overlay">
+          <span class="product-add">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5"/></svg>
+            Add to bag
+          </span>
+          <span style="font-size:.65rem;color:rgba(240,246,251,.5)">Quick view</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="product-category">Cleanser</p>
+        <h3 class="product-name">1025 Dokdo Cleanser</h3>
+        <p class="product-desc">Deep sea mineral cleanser for a fresh, balanced complexion</p>
+        <div class="product-footer">
+          <span class="product-price">8</span>
+          <div class="product-rating"><span>★★★★★</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MODEL GALLERY -->
+<section class="gallery" id="gallery">
+  <p class="section-tag reveal">Catalog</p>
+  <h2 class="section-title reveal">Glow Seoul <em>Partners</em></h2>
+  <div class="gallery-grid">
+    <div class="gallery-item reveal">
+      <img src="https://i.pinimg.com/1200x/6f/2c/c2/6f2cc2458519f89d1e300b53e4c8ace1.jpg" alt="Glow Seoul campaign" />
+      <div class="gallery-item-overlay"><span class="gallery-item-label">Jang Wonyoung</span></div>
+    </div>
+    <div class="gallery-item reveal reveal-delay-1">
+      <img src="https://i.pinimg.com/1200x/aa/81/2e/aa812e62399a1bcda0985e2770bf6b53.jpg" alt="Glow Seoul campaign" />
+      <div class="gallery-item-overlay"><span class="gallery-item-label">Yuri</span></div>
+    </div>
+    <div class="gallery-item reveal reveal-delay-2">
+      <img src="https://i.pinimg.com/736x/20/0d/52/200d52ec5d4054b2c04b3582180cce17.jpg" alt="Glow Seoul campaign" />
+      <div class="gallery-item-overlay"><span class="gallery-item-label">Yunbi</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <p class="section-tag reveal">Clients</p>
+  <h2 class="section-title reveal">Skin that <em>glows</em> for itself</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <p class="testimonial-text">Glow Seoul's Pine Cica Ampoule is honestly life-changing. My skin barrier has never felt this strong and the glass skin effect is so real — I get compliments every day!</p>
+      <div class="testimonial-author">
+        <img class="testimonial-avatar" src="https://i.pinimg.com/1200x/bf/03/f0/bf03f0ff3c501a4f3c86ad62f3d5f6ec.jpg" alt="Hyeong" />
+        <div><p class="testimonial-name">Hyeong.</p><p class="testimonial-handle">@Hyeong.Honey· Verified Buyer</p></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <p class="testimonial-text">Finally a K-Beauty brand that's both luxurious and ethical. The Birch Juice Pads are perfection — lightweight but so deeply nourishing. My holy grail forever.</p>
+      <div class="testimonial-author">
+        <img class="testimonial-avatar" src="https://i.pinimg.com/736x/87/b5/1d/87b51df0a715ee76742dbe110f67e005.jpg" alt="Tzuyu" />
+        <div><p class="testimonial-name">Tzuyu.</p><p class="testimonial-handle">@Allaboutzuyu.  Verified Buyer</p></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <p class="testimonial-text">K-beauty that actually delivers. The Dokdo Cleanser evened my skin tone in weeks. Love the clean ingredients and the gorgeous packaging looks stunning on my vanity.</p>
+      <div class="testimonial-author">
+        <img class="testimonial-avatar" src="https://i.pinimg.com/1200x/37/c3/11/37c31104a1bb4197cbe05fd04a79bf53.jpg" alt="Kazuha" />
+        <div><p class="testimonial-name">Kazhuha.</p><p class="testimonial-handle">@Kazuhaofficial. Verified Buyer</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <p class="section-tag">Stay Radiant</p>
+  <h2 class="section-title reveal">Seoul secrets,<br>delivered</h2>
+  <p class="section-lead reveal">Subscribe for exclusive K-Beauty launches, glass skin rituals, and members-only offers — straight to your inbox.</p>
+  <div class="newsletter-form reveal">
+    <input type="email" placeholder="your@email.com" />
+    <button type="button">Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo">GLOW SEOUL<span style="color:var(--rose)">.</span></span>
+      <p>K-Beauty luxury, formulated with Seoul's finest botanicals and a commitment to the planet.</p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social">IG</a>
+        <a href="#" class="footer-social">TT</a>
+        <a href="#" class="footer-social">PI</a>
+        <a href="#" class="footer-social">YT</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul><li><a href="#">Serums</a></li><li><a href="#">Toner Pads</a></li><li><a href="#">Cleansers</a></li><li><a href="#">Sunscreen</a></li><li><a href="#">Gift Sets</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul><li><a href="#">Our Story</a></li><li><a href="#">Ingredients</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Journal</a></li><li><a href="#">Stockists</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul><li><a href="#">FAQ</a></li><li><a href="#">Shipping & Returns</a></li><li><a href="#">Track Order</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Privacy Policy</a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Glow Seoul. All rights reserved.</span>
+    <span>Crafted with ♥ for your skin</span>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+  });
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+  document.querySelector('.newsletter-form button').addEventListener('click', function() {
+    const input = document.querySelector('.newsletter-form input');
+    if (input.value.includes('@')) { this.textContent = '✓ Subscribed!'; this.style.background = 'var(--rose)'; input.value = ''; }
+  });
+</script>
+</body>
+</html>
